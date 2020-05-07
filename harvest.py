@@ -89,8 +89,8 @@ class Melon(object):
         self.harvested_from = harvested_from
         self.harvested_by = harvested_by
 
-    def is_sellable(self, shape_rating, color_rating, harvested_from):
-        if shape_rating > 5 and color_rating > 5 and harvested_from != 3:
+    def is_sellable(self):
+        if self.shape_rating > 5 and self.color_rating > 5 and self.harvested_from != 3:
             return True
         else:
             return False
@@ -136,15 +136,39 @@ def get_sellability_report(melons):
     """Given a list of melon object, prints whether each one is sellable."""
 
     for melon in melons:
-        if melon.is_sellable(melon.shape_rating, melon.color_rating, melon.harvested_from):
+        if melon.is_sellable():
             sellable = '(CAN BE SOLD)'
         else:
             sellable = '(NOT SELLABLE)'
 
-        print(f'Harvested by {melon.harvested_by} from Field {melon.harvested_from} {sellable}')
+        print(f'Harvested by {melon.harvested_by} \
+              from Field {melon.harvested_from} {sellable}')
+
+def make_melons_from_file(melon_types, filename):
+    with open('harvest.txt') as data_file:
+        
+        melons = []
+
+        for line in data_file:
+            line = line.strip().split()
+
+            melon_type = make_melon_type_lookup(melon_types)[line[5]]
+            shape_rating = line[1]
+            color_rating = line[3]
+            harvested_from = line[11]
+            harvested_by = line[8]
+
+            new_melon = Melon(melon_type, shape_rating, color_rating,
+                              harvested_from, harvested_by)
+            melons.append(new_melon)
+
+        return melons
+
+
 
 melon_types = make_melon_types()
 pairings = print_pairing_info(melon_types)
 make_melon_type_lookup(melon_types)
 melons = make_melons(melon_types)
 get_sellability_report(melons)
+make_melons_from_file(melon_types, 'harvest.txt')
